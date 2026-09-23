@@ -1,0 +1,93 @@
+export const PRODUCT_NAME = 'Finova';
+export const STORAGE_KEY = 'finova-prototype-v4';
+
+export type Lesson = { id: string; title: string; category: string; minutes: number; level: string; description: string; icon: string };
+export type GlossaryTerm = { term: string; definition: string; why: string };
+export type KnowledgeCheck = { prompt: string; choices: string[]; correct: number; explanation: string };
+export type LessonContent = { mastery: string; opening: string; exampleTitle: string; example: string; scenarioTitle: string; scenario: string; checks: KnowledgeCheck[]; takeaways: string[] };
+export type FinovaState = {
+  onboarded: boolean; name: string; stage: string; confidence: number; savings: number; goal: string; intent: string; interests: string[];
+  roadmap: string[]; completedMilestones: string[]; completedLessons: string[]; mastery: Record<string, number>;
+  lessonBestScores: Record<string, number>; simulations: number; streak: number; activity: string[]; activityDays: string[];
+  preferences: { weeklyNudge: boolean; practicalFirst: boolean }; baselineReadiness: number;
+  financialProfile: { cash: number; emergencyFund: number; creditCardDebt: number; studentLoans: number; retirement: number; employerMatch: number; monthlySurplus: number } | null;
+};
+
+export const masteryLevels = ['Beginner', 'Developing', 'Intermediate', 'Applied', 'Advanced', 'Mastery'] as const;
+export type MasteryLevel = typeof masteryLevels[number];
+
+type ModuleConfig = { id:string; title:string; category:string; icon:string; description:string; focuses:string[]; scenario:string };
+export const curriculumModules: ModuleConfig[] = [
+ {id:'foundations',title:'Money Foundations',category:'Money Basics',icon:'Compass',description:'Build the mental model behind everyday financial decisions.',focuses:['income, expenses, assets and liabilities','opportunity cost and tradeoffs','net worth and cash flow together','prioritizing competing goals','evaluating a full financial snapshot','building a reasoned financial action plan'],scenario:'You have limited monthly cash and several goals competing for the same dollars.'},
+ {id:'cash-flow',title:'Budgeting & Cash Flow',category:'Budgeting',icon:'WalletCards',description:'Turn income into a flexible plan you can actually use.',focuses:['needs, wants and monthly cash flow','fixed vs variable costs and sinking funds','building a realistic monthly plan','adjusting a plan after overspending','handling irregular income and competing priorities','diagnosing and rebuilding an unsustainable budget'],scenario:'Your month changes unexpectedly and your original spending plan no longer works.'},
+ {id:'banking',title:'Banking & Accounts',category:'Banking',icon:'Landmark',description:'Understand checking, savings, fees, APY and where money belongs.',focuses:['checking vs savings accounts','fees, overdrafts and account rules','APY, compounding and liquidity','choosing accounts for different goals','comparing account terms and tradeoffs','designing an account system for a real-life case'],scenario:'You need to choose where to keep spending money, emergency cash and short-term savings.'},
+ {id:'emergency',title:'Emergency Savings',category:'Saving',icon:'ShieldCheck',description:'Build a buffer that keeps surprises from becoming expensive debt.',focuses:['what counts as an emergency','first savings targets and liquidity','months of expenses and risk factors','responding to a surprise expense','rebuilding a depleted emergency fund','designing a resilient emergency strategy'],scenario:'A surprise essential expense arrives when your checking balance is already tight.'},
+ {id:'credit',title:'Credit',category:'Credit',icon:'CreditCard',description:'Use credit intentionally and understand how borrowing affects you.',focuses:['credit cards, statements and due dates','utilization, payment history and APR','interest and statement mechanics','managing a first credit card month','recovering from high utilization or a missed payment','analyzing a complicated credit profile and action plan'],scenario:'Your statement closes after a month with both planned purchases and an unexpected expense.'},
+ {id:'debt',title:'Debt & Interest',category:'Debt',icon:'Scale',description:'Understand borrowing costs and make repayment tradeoffs visible.',focuses:['principal, interest and APR','minimum payments and total cost','snowball, avalanche and cash-flow tradeoffs','allocating extra money across debts','refinancing and repayment tradeoffs','building a repayment strategy from a multi-debt case'],scenario:'You have several balances, different APRs and only a limited amount available for extra payments.'},
+ {id:'paychecks',title:'Paychecks & Income',category:'Income',icon:'ReceiptText',description:'Read a paycheck and understand what compensation really means.',focuses:['gross pay, take-home pay and deductions','hourly, salary and variable income','benefits and total compensation','planning from a first full-time paycheck','comparing two compensation packages','building a plan from a complete job-offer scenario'],scenario:'You receive a job offer and must turn the headline salary into a realistic monthly plan.'},
+ {id:'taxes',title:'Taxes',category:'Taxes',icon:'FileText',description:'Understand the tax concepts that show up in work and everyday money.',focuses:['withholding and why taxes leave a paycheck','basic tax documents and filing vocabulary','marginal rates, deductions and credits','interpreting a simplified tax situation','income changes and withholding tradeoffs','working through a multi-factor hypothetical tax case'],scenario:'Your income changes during the year and you need to understand what that could mean for withholding and filing.'},
+ {id:'investing',title:'Investing',category:'Investing',icon:'TrendingUp',description:'Learn how risk, diversification, time and fees work together.',focuses:['stocks, bonds, funds and risk','diversification and time horizon','index funds, fees and asset allocation','building a hypothetical diversified portfolio','responding to volatility and changing goals','managing a long-term simulated portfolio through life events'],scenario:'Markets fall while you are investing for a goal that is still years away.'},
+ {id:'roth-ira',title:'Roth IRA',category:'Retirement',icon:'Sprout',description:'Go beyond the definition and learn how a Roth IRA works in practice.',focuses:['account vs investment and Roth basics','contributions, eligibility and tax treatment','what to hold inside the account and diversification','balancing Roth contributions with other priorities','withdrawal rules, limits and changing income','solving a complete retirement-funding case involving a Roth IRA'],scenario:'You want to start retirement saving but also have emergency savings, debt and a workplace plan to consider.'},
+ {id:'workplace',title:'401(k) & Workplace Benefits',category:'Retirement',icon:'BriefcaseBusiness',description:'Understand employer plans, matching and the value hidden inside benefits.',focuses:['401(k) basics and employer matching','vesting, contributions and plan vocabulary','traditional vs Roth workplace contributions','choosing a contribution in a realistic paycheck','evaluating benefits across job offers','optimizing a hypothetical benefits package across competing goals'],scenario:'Your employer offers a match, insurance choices and other benefits that all affect take-home pay.'},
+ {id:'student-loans',title:'Student Loans',category:'Debt',icon:'GraduationCap',description:'Understand balances, repayment and how loans fit into life after college.',focuses:['principal, interest and loan vocabulary','repayment timing and monthly payments','repayment-plan tradeoffs','building a post-graduation payment plan','balancing loans with saving and retirement','solving a full early-career student-loan case'],scenario:'Graduation is approaching and your first salary must cover living costs, saving and student-loan payments.'},
+ {id:'insurance',title:'Insurance',category:'Insurance',icon:'Umbrella',description:'Learn how coverage protects against risks you cannot comfortably absorb.',focuses:['premium, deductible and coverage basics','health, auto, renters and common policy terms','risk transfer and out-of-pocket tradeoffs','choosing between simplified plan options','coverage gaps and changing life circumstances','building a protection plan for a complete hypothetical household'],scenario:'You must choose coverage before knowing whether an expensive event will happen.'},
+ {id:'life-decisions',title:'Major Life Decisions',category:'Life Planning',icon:'Home',description:'Practice the financial tradeoffs behind housing, cars, moving and other big choices.',focuses:['true cost vs sticker price','renting, transportation and recurring costs','opportunity cost across major goals','choosing housing or transportation under constraints','evaluating a move, car or major purchase over time','solving a multi-year life-decision case'],scenario:'A major purchase looks affordable monthly, but it changes several other goals at the same time.'},
+ {id:'wealth',title:'Building Wealth',category:'Wealth',icon:'BarChart3',description:'Connect saving, investing, taxes, risk and time into a long-term system.',focuses:['saving rate, net worth and compounding','short-, medium- and long-term goals','asset allocation and long-term behavior','building a hypothetical wealth plan','adapting a plan as income and life change','integrating the entire MoneyMap into a long-term case'],scenario:'Your income rises and you must decide how to divide new money among lifestyle, protection and long-term goals.'},
+];
+
+export const categories = ['All topics', ...Array.from(new Set(curriculumModules.map(m => m.category)))];
+const slugLevel = (level:string) => level.toLowerCase();
+export const lessons: Lesson[] = curriculumModules.flatMap((m, moduleIndex) => masteryLevels.map((level, levelIndex) => ({
+ id:`${m.id}-${slugLevel(level)}`, title:`${m.title}: ${level}`, category:m.category, minutes: 7 + levelIndex * 2,
+ level, description:`${level}: ${m.focuses[levelIndex]}.`, icon:m.icon
+})));
+
+export const roadmapBase = curriculumModules.flatMap((m, moduleIndex) => masteryLevels.map((level, levelIndex) => ({
+ id:`${m.id}-${slugLevel(level)}`, title:m.title, description:m.focuses[levelIndex], lessonId:`${m.id}-${slugLevel(level)}`, moduleId:m.id, moduleIndex, level, levelIndex
+}))).sort((a,b) => (a.moduleIndex+a.levelIndex)-(b.moduleIndex+b.levelIndex) || a.moduleIndex-b.moduleIndex);
+
+export function isMilestoneUnlocked(id:string, completed:string[]) {
+ const item=roadmapBase.find(x=>x.id===id); if(!item) return false;
+ if(item.moduleIndex===0 && item.levelIndex===0) return true;
+ if(item.levelIndex===0) return completed.includes(`${curriculumModules[item.moduleIndex-1].id}-beginner`);
+ return completed.includes(`${item.moduleId}-${slugLevel(masteryLevels[item.levelIndex-1])}`);
+}
+
+export const glossary: GlossaryTerm[] = [
+  { term: 'APR', definition: 'Annual percentage rate: a standardized way to express the yearly cost of borrowing.', why: 'It helps compare borrowing costs, though fees and compounding can still matter.' },
+  { term: 'APY', definition: 'Annual percentage yield: the yearly return on savings that accounts for compounding.', why: 'It helps compare deposit accounts on a more apples-to-apples basis.' },
+  { term: 'Emergency fund', definition: 'Money set aside for an unexpected essential expense, like a repair or urgent bill.', why: 'It can reduce the need to use high-interest debt when life surprises you.' },
+  { term: 'Roth IRA', definition: 'An individual retirement account funded with after-tax dollars; qualified withdrawals can be tax-free under current rules.', why: 'It is one retirement account type worth understanding early.' },
+  { term: '401(k) match', definition: 'Money an employer may contribute to a workplace retirement plan when an employee contributes.', why: 'Understanding the match helps you understand the full value of workplace benefits.' },
+  { term: 'Credit utilization', definition: 'The share of available revolving credit currently reported as used.', why: 'Utilization is one factor commonly considered in credit scoring models.' },
+  { term: 'Take-home pay', definition: 'The amount left from gross pay after taxes and other paycheck deductions.', why: 'This is closer to the amount available for your monthly plan.' },
+  { term: 'Diversification', definition: 'Spreading investments across many holdings or categories rather than depending heavily on one.', why: 'Diversification can reduce concentration risk, though it cannot eliminate market risk.' },
+  { term: 'Index fund', definition: 'A fund designed to track a market index or benchmark.', why: 'It is a common way to learn about diversified, rules-based investing.' },
+  { term: 'Compound growth', definition: 'Growth that can build on prior growth over time.', why: 'It shows why time can matter in long-term saving and investing.' },
+];
+
+
+export const seedState: FinovaState = { onboarded:false,name:'',stage:'',confidence:0,savings:0,goal:'',intent:'',interests:[],roadmap:roadmapBase.map(x=>x.id),completedMilestones:[],completedLessons:[],mastery:blankMastery,lessonBestScores:{},simulations:0,streak:0,activity:[],activityDays:[],preferences:{weeklyNudge:true,practicalFirst:true},baselineReadiness:0,financialProfile:null };
+export function loadState(): FinovaState { try { const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return seedState; const parsed=JSON.parse(raw); return {...seedState,...parsed,roadmap:roadmapBase.map(x=>x.id),mastery:{...blankMastery,...(parsed.mastery||{})},lessonBestScores:{...(parsed.lessonBestScores||{})},preferences:{...seedState.preferences,...(parsed.preferences||{})}}; } catch { return seedState; } }
+export function saveState(next: FinovaState){localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}
+export function initials(name:string){const parts=name.trim().split(/\s+/).filter(Boolean);return(parts.length?parts.slice(0,2).map(x=>x[0]).join(''):'YOU').toUpperCase();}
+export function todayLabel(){return new Intl.DateTimeFormat(undefined,{weekday:'long',month:'long',day:'numeric'}).format(new Date());}
+export function readinessScore(state:FinovaState){const masteryAvg=Object.values(state.mastery).reduce((a,b)=>a+b,0)/Math.max(1,Object.keys(state.mastery).length);const roadmap=state.completedMilestones.length/Math.max(1,state.roadmap.length)*100;const practice=Math.min(100,state.simulations*10);return Math.round(masteryAvg*.50+roadmap*.35+practice*.15);}
+export function recordActivity(state:FinovaState,message:string):FinovaState{const today=new Date().toISOString().slice(0,10);const days=state.activityDays.includes(today)?state.activityDays:[...state.activityDays,today];const sorted=[...days].sort().reverse();let streak=0;const cursor=new Date();for(let i=0;i<365;i++){const key=cursor.toISOString().slice(0,10);if(sorted.includes(key)){streak++;cursor.setDate(cursor.getDate()-1)}else if(i===0){cursor.setDate(cursor.getDate()-1)}else break}return{...state,activity:[message,...state.activity.filter(x=>x!==message)].slice(0,8),activityDays:days.slice(-30),streak};}
+export function makeRoadmap(_answers:Record<string,string|string[]>){return roadmapBase.map(x=>x.id);}
+export function initialMastery(answers:Record<string,string|string[]>){const confidence=Number(String(answers.confidence||'1').charAt(0));const base=Math.max(0,(confidence-1)*2);return Object.fromEntries(curriculumModules.map(m=>[m.title,base]));}
+
+const levelLanguage: Record<MasteryLevel,{opening:string,challenge:string}> = {
+ Beginner:{opening:'Start with the core idea and the vocabulary you need to recognize it in real life.',challenge:'identify the most important concept'},
+ Developing:{opening:'Now connect the definition to the rules, numbers and tradeoffs that make it useful.',challenge:'interpret the situation instead of recalling a definition'},
+ Intermediate:{opening:'Work with multiple pieces of information at once and explain what changes the outcome.',challenge:'calculate or compare the important tradeoff'},
+ Applied:{opening:'Use the concept in a realistic decision where several answers can look reasonable at first.',challenge:'make a decision under realistic constraints'},
+ Advanced:{opening:'Handle exceptions, competing priorities and incomplete information without relying on a memorized rule.',challenge:'defend a choice while recognizing what could change it'},
+ Mastery:{opening:'Pull the topic together in a case that requires judgment, explanation and connections to other parts of your financial life.',challenge:'build and explain a complete approach'},
+};
+export const lessonContent: Record<string,LessonContent> = Object.fromEntries(curriculumModules.flatMap(m=>masteryLevels.map((level,levelIndex)=>{
+ const focus=m.focuses[levelIndex]; const lang=levelLanguage[level];
+ const check1:KnowledgeCheck={prompt:`At the ${level.toLowerCase()} level, what should you focus on first when working with ${m.title.toLowerCase()}?`,choices:[focus,'Memorizing a single rule without context','Choosing whatever option sounds most impressive'],correct:0,explanation:`This level focuses on ${focus}. The goal is to understand why the idea matters, not just recognize a term.`};
+ const check2:KnowledgeCheck={prompt:`In this situation — ${m.scenario} — what is the strongest next step?`,choices:[`Use the information available to ${lang.challenge}, then explain the tradeoff.`,`Ignore the constraints and choose the option with the biggest number.`,`Assume there is one perfect answer for every person.`],correct:0,explanation:`Real financial decisions depend on constraints, goals and tradeoffs. At ${level} level, you should be able to ${lang.challenge}.`};
+ return [[`${m.id}-${slugLevel(level)}`,{mastery:m.title,opening:`${lang.opening} In this ${m.title} lesson, you will focus on ${focus}.`,exampleTitle:`${level} example`,example:`Imagine this: ${m.scenario} Instead of jumping to an answer, identify the numbers, rules, time horizon and goals that actually affect the choice.`,scenarioTitle:'Real-life decision',scenario:`${m.scenario} Your job is to ${lang.challenge}. As Finova gets deeper, the scenarios intentionally include competing priorities so the answer is not just a vocabulary test.`,checks:[check1,check2],takeaways:[`You can explain ${focus} in your own words.`,`You can connect ${m.title.toLowerCase()} to a realistic decision.`,`You can describe the tradeoff instead of treating the topic as a definition to memorize.`]} as LessonContent]];
+}))) as Record<string,LessonContent>;
